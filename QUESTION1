@@ -2,92 +2,129 @@
 #include <stdbool.h>
 #include <stdlib.h>
 
-#define SIZE 24        
-#define nRows 8         
-#define nCols 3          
+#define SIZE 24
+#define nRows 8
+#define nCols 3
 
 // Function prototypes
-void print_array(int array[], int length);                // Function to print a 1D array
-void print_matrix(int mat[][nCols], int rows);           // Function to print a 2D array
-bool isValid(const int arr[], int length, int pos);      // Function to check if a position is valid
-void remove_element(int arr[], int length, int pos);     // Function to remove an element from the array
-void insert_element(int arr[], int length, int pos, int value); // Function to insert an element into the array
-void reshape(const int arr[], int length, int nRows, int nCols, int arr2d[nRows][nCols]); // Function to reshape a 1D array into a 2D array
-
+void print_array(int array[], int length);
+void print_matrix(int matrix[][nCols], int rows);
+bool isValid(const int array[], int length, int position);
+void remove_element(int array[], int length, int position);
+void insert_element(int array[], int length, int position, int value);
+void reshape(const int array[], int length, int numRows, int numCols, int reshapedMatrix[numRows][numCols]);
+void trans_matrix(int numRows, int numCols, const int matrix[numRows][numCols], int transposedMatrix[numCols][numRows]);
+bool found_duplicate(int array[], int length);
 
 int main() {
-    int arr[SIZE] = {10, 20, 30, 40, 50, 10, 10, 20, 40, 50, 60, 70, 80, 90, 100, 110, 120, 130, 140, 150, 160, 170, 180, 190}; // Initialize the array
-    int arr2d[nRows][nCols];                               // Declare a 2D array for reshaping
+    int array[SIZE] = {10, 20, 30, 40, 50, 10, 10, 20, 40, 50, 60, 70, 80, 90, 100, 110, 120, 130, 140, 150, 160, 170, 180, 190};
+    int reshapedArray[nRows][nCols];
 
     // Testing remove_element
-    printf("Original array:\n");
-    print_array(arr, SIZE);                                 // Print the original array
-    remove_element(arr, SIZE, 2);                          // Remove the element at index 2
-    printf("Array after removing element at index 2:\n");
-    print_array(arr, SIZE - 1);                            // Print the modified array
+    printf("Initial array:\n");
+    print_array(array, SIZE);
+    remove_element(array, SIZE, 2);
+    printf("Array after removing element at position 2:\n");
+    print_array(array, SIZE - 1);
 
     // Testing insert_element
-    insert_element(arr, SIZE - 1, 2, 80);                  // Insert 80 at index 2
-    printf("Array after inserting 80 at index 2:\n");
-    print_array(arr, SIZE);                                 // Print the modified array
+    insert_element(array, SIZE - 1, 2, 80);
+    printf("Array after inserting 80 at position 2:\n");
+    print_array(array, SIZE);
 
     // Testing reshape
-    reshape(arr, SIZE, nRows, nCols, arr2d);              // Reshape the 1D array into a 2D array
-    printf("2D array after reshaping:\n");
-    print_matrix(arr2d, nRows);                            // Print the reshaped 2D array
+    reshape(array, SIZE, nRows, nCols, reshapedArray);
+    printf("Reshaped to 2D array:\n");
+    print_matrix(reshapedArray, nRows);
 
-    // Testing transpose
-    int transposed[nCols][nRows];                          // Declare a 2D array for the transposed matrix
-    trans_matrix(nRows, nCols, arr2d, transposed);        // Transpose the 2D array
-    printf("Transposed matrix:\n");
-    print_matrix(transposed, nCols);                       // Print the transposed matrix
+    // Testing trans_matrix
+    int transposedArray[nCols][nRows];
+    trans_matrix(nRows, nCols, reshapedArray, transposedArray);
+    printf("Transposed 2D array:\n");
+    print_matrix(transposedArray, nCols);
 
     // Testing found_duplicate
-    bool hasDuplicates = found_duplicate(arr, SIZE);       // Check if there are duplicates in the array
-    printf("Array has duplicates: %s\n", hasDuplicates ? "true" : "false"); // Print the result
+    bool hasDuplicates = found_duplicate(array, SIZE);
+    printf("Duplicate elements in array: %s\n", hasDuplicates ? "true" : "false");
 
-    return 0;                                              // Exit the program
+    return 0;
 }
 
-// Function definitions
-// Check if the given position is valid (within the bounds of the array)
-bool isValid(const int arr[], int length, int pos) {
-    return pos >= 0 && pos < length; // Return true if pos is valid
+// Checks if a given position is valid within the array bounds
+bool isValid(const int array[], int length, int position) {
+    return position >= 0 && position < length;
 }
 
-// Remove an element from the array at the specified position
-void remove_element(int arr[], int length, int pos) {
-    if (!isValid(arr, length, pos)) {
-        printf("Error: Invalid position %d for removal.\n", pos); // Print an error if pos is invalid
+// Removes an element from the array at a specified position, shifting remaining elements left
+void remove_element(int array[], int length, int position) {
+    if (!isValid(array, length, position)) {
+        printf("Error: Position %d is invalid for removal.\n", position);
         return;
     }
-    for (int i = pos; i < length - 1; i++) {
-        arr[i] = arr[i + 1]; // Shift elements left to fill the gap
+    for (int i = position; i < length - 1; i++) {
+        array[i] = array[i + 1];
     }
 }
 
-// Insert a value into the array at the specified position
-void insert_element(int arr[], int length, int pos, int value) {
-    if (!isValid(arr, length, pos) || length >= SIZE) {
-        printf("Error: Invalid position %d for insertion.\n", pos); // Print an error if pos is invalid or array is full
+// Inserts a new value into the array at a specified position, shifting elements to the right
+void insert_element(int array[], int length, int position, int value) {
+    if (!isValid(array, length, position) || length >= SIZE) {
+        printf("Error: Position %d is invalid for insertion.\n", position);
         return;
     }
-    for (int i = length; i > pos; i--) {
-        arr[i] = arr[i - 1]; // Shift elements right to make space
+    for (int i = length; i > position; i--) {
+        array[i] = array[i - 1];
     }
-    arr[pos] = value; // Insert the new value
+    array[position] = value;
 }
 
-// Reshape a 1D array into a 2D array of specified dimensions
-void reshape(const int arr[], int length, int nRows, int nCols, int arr2d[nRows][nCols]) {
-    if (length != nRows * nCols) {
-        printf("Error: The length of array is not equal to nRows * nCols.\n"); // Print an error if dimensions don't match
+// Reshapes a 1D array into a 2D matrix with specified number of rows and columns
+void reshape(const int array[], int length, int numRows, int numCols, int reshapedMatrix[numRows][numCols]) {
+    if (length != numRows * numCols) {
+        printf("Error: Array length does not match product of numRows and numCols.\n");
         return;
     }
-    for (int col = 0; col < nCols; col++) {
-        for (int row = 0; row < nRows; row++) {
-            arr2d[row][col] = arr[col * nRows + row]; // Fill the 2D array column-wise
+    for (int col = 0; col < numCols; col++) {
+        for (int row = 0; row < numRows; row++) {
+            reshapedMatrix[row][col] = array[col * numRows + row];
         }
     }
 }
+
+// Transposes a given matrix, swapping its rows and columns
+void trans_matrix(int numRows, int numCols, const int matrix[numRows][numCols], int transposedMatrix[numCols][numRows]) {
+    for (int i = 0; i < numRows; i++) {
+        for (int j = 0; j < numCols; j++) {
+            transposedMatrix[j][i] = matrix[i][j];
+        }
+    }
+}
+
+// Checks if there are any duplicate elements in the array
+bool found_duplicate(int array[], int length) {
+    for (int i = 0; i < length; i++) {
+        for (int j = i + 1; j < length; j++) {
+            if (array[i] == array[j]) {
+                return true;
+            }
+        }
+    }
+    return false;
+}
+
+// Prints a 1D array with each element and its index
+void print_array(int array[], int length) {
+    for (int i = 0; i < length; i++)
+        printf("array[%d]= %d\n", i, array[i]);
+}
+
+// Prints a 2D matrix with each element and its row/column index
+void print_matrix(int matrix[][nCols], int rows) {
+    for (int i = 0; i < rows; i++) {
+        for (int j = 0; j < nCols; j++)
+            printf("matrix[%d][%d]= %d\n", i, j, matrix[i][j]);
+        puts("");
+    }
+}
+
 
