@@ -1,0 +1,59 @@
+#include <stdio.h>
+
+#define INITIAL_BALANCE 1000   // Starting balance in AED
+#define MAX_TRANSACTIONS 7     // Maximum number of transactions to process
+
+// Function prototype for printing an array
+void print_array(const int array[], int length);
+
+int main() {
+    // Define the array of transactions
+    int transactions[MAX_TRANSACTIONS] = {200, -150, -500, -400, -50, -200, 300};
+    int tobeprocessed[MAX_TRANSACTIONS];  // Array to hold unprocessed transactions
+    int tobeprocessed_count = 0;          // Counter for unprocessed transactions
+    int balance = INITIAL_BALANCE;        // Initialize balance
+    int i;                                // Loop counter
+
+    // Loop through each transaction to process it
+    for (i = 0; i < MAX_TRANSACTIONS; i++) {
+        int transaction = transactions[i];  // Get the current transaction
+
+        // Check if transaction is a withdrawal that exceeds the available balance
+        if (transaction < 0 && (-transaction) > balance) {
+            printf("Transaction %d of %d AED is invalid due to insufficient balance. Skipping this transaction.\n", i + 1, -transaction);
+            tobeprocessed[tobeprocessed_count++] = transaction;  // Record this transaction as unprocessed
+            continue;  // Move to the next transaction
+        }
+
+        // Update balance after processing the current transaction
+        balance += transaction;
+
+        // Check if balance becomes zero after the transaction
+        if (balance == 0) {
+            printf("Balance has reached 0. No further transactions will be processed.\n");
+            tobeprocessed[tobeprocessed_count++] = transaction;  // Add the transaction to unprocessed list
+            break;  // Exit the loop as balance is now zero
+        }
+    }
+
+    // Display the final balance after processing
+    printf("Final Balance: %d AED\n", balance);
+
+    // Show any transactions that couldn’t be processed
+    printf("Unprocessed transactions:\n");
+    if (tobeprocessed_count == 0) {
+        printf("None\n");  // No unprocessed transactions if count is zero
+    } else {
+        print_array(tobeprocessed, tobeprocessed_count);  // Call helper function to print the list
+    }
+
+    return 0;
+}
+
+// Helper function to print the contents of an array
+void print_array(const int array[], int length) {
+    for (int i = 0; i < length; i++) {
+        printf("%d ", array[i]);  // Print each element
+    }
+    printf("\n");  // Newline after printing all elements
+}
