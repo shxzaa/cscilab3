@@ -57,3 +57,4 @@ void print_array(const int array[], int length) {
     }
     printf("\n");  // Newline after printing all elements
 }
+
